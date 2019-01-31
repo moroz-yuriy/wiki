@@ -221,9 +221,9 @@ class UpdatePageToCurrentTest(TestCase):
             serializer.save()
 
     def test_set_page_as_current(self):
-        # get API response
+        # get API good response
         response = client.patch(
-            reverse('get_current_version', kwargs={'uuid': self.page1.uuid, 'version': self.page1.version})
+            reverse('set_current_version', kwargs={'uuid': self.page1.uuid, 'version': self.page1.version})
         )
         # get data from db
         page = WikiPage.objects.pages_version(uuid=self.page1.uuid, version=self.page1.version)
@@ -232,3 +232,11 @@ class UpdatePageToCurrentTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(response.data['is_current'], True)
         self.assertEqual(response.data['is_current'], serializer.data['is_current'])
+
+
+        # get API bad response
+        response = client.patch(
+            reverse('set_current_version', kwargs={'uuid': self.page1.uuid, 'version': 1000})
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

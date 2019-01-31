@@ -92,7 +92,11 @@ def get_version(request, uuid, version):
             Return page version.
     """
     if request.method == 'GET':
-        page = WikiPage.objects.pages_version(uuid=uuid, version=version)
+        try:
+            page = WikiPage.objects.pages_version(uuid=uuid, version=version)
+        except WikiPage.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         serializer = WikiPageSerializer(page)
         return Response(serializer.data)
 
@@ -105,7 +109,11 @@ def get_current_version(request, uuid):
         Return current version of page.
     """
     if request.method == 'GET':
-        page = WikiPage.objects.pages_current_version(uuid=uuid)
+        try:
+            page = WikiPage.objects.pages_current_version(uuid=uuid)
+        except WikiPage.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         serializer = WikiPageSerializer(page)
         return Response(serializer.data)
 
@@ -118,11 +126,15 @@ def set_current_version(request, uuid, version):
         Set page version to current
     """
     if request.method == 'PATCH':
+        try:
+            page = WikiPage.objects.pages_version(uuid=uuid, version=version)
+        except WikiPage.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         WikiPage.objects.filter(uuid=uuid).update(is_current=False)
-        page = WikiPage.objects.pages_version(uuid=uuid, version=version)
         page.is_current = True
         page.save()
         serializer = WikiPageSerializer(page)
         return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
 
-    return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
