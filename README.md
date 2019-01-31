@@ -32,9 +32,9 @@
     python manage.py runserver 8000
     ```
 ### Optional 
-    Run tests
+-  Run tests
     ```
-    python manage.py test -v 3
+     python manage.py test -v 3
     ```
 ## API documentation 
     http://127.0.0.1:8000/docs/
