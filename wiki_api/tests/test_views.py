@@ -222,7 +222,7 @@ class UpdatePageToCurrentTest(TestCase):
 
     def test_set_page_as_current(self):
         # get API response
-        response = client.put(
+        response = client.patch(
             reverse('get_current_version', kwargs={'uuid': self.page1.uuid, 'version': self.page1.version})
         )
         # get data from db

@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path, re_path
+from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,4 +24,6 @@ urlpatterns = [
         r'^api-auth/',
         include('rest_framework.urls', namespace='rest_framework')
     ),
+    re_path(r'^docs/', include_docs_urls(title='Wiki page API'))
+
 ]

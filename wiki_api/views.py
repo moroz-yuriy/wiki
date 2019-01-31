@@ -8,6 +8,16 @@ from .serializers import WikiPageSerializer
 
 @api_view(['GET', 'DELETE', 'PUT'])
 def get_delete_update_wiki_page(request, pk):
+    """
+           get:
+           Get details of a single page.
+
+           post:
+           Update details of a single page and create new version.
+
+           delete:
+           Delete a single page
+        """
     try:
         page = WikiPage.objects.get(pk=pk)
     except WikiPage.DoesNotExist:
@@ -39,12 +49,18 @@ def get_delete_update_wiki_page(request, pk):
 
 @api_view(['GET', 'POST'])
 def get_post_wiki_page(request):
-    # get all pages
+    """
+       get:
+       Get all active pages.
+
+       post:
+       Create new page.
+    """
+
     if request.method == 'GET':
         pages = WikiPage.objects.pages()
         serializer = WikiPageSerializer(pages, many=True)
         return Response(serializer.data)
-    # insert a new record for a page
     elif request.method == 'POST':
         page = {
             'title': request.data.get('title'),
@@ -59,6 +75,9 @@ def get_post_wiki_page(request):
 
 @api_view(['GET'])
 def get_page_versions(request, uuid):
+    """
+        Return a list of all page versions.
+    """
     if request.method == 'GET':
         pages = WikiPage.objects.filter(uuid=uuid).order_by('-version')
         serializer = WikiPageSerializer(pages, many=True)
@@ -69,6 +88,9 @@ def get_page_versions(request, uuid):
 
 @api_view(['GET'])
 def get_version(request, uuid, version):
+    """
+            Return page version.
+    """
     if request.method == 'GET':
         page = WikiPage.objects.pages_version(uuid=uuid, version=version)
         serializer = WikiPageSerializer(page)
@@ -77,13 +99,25 @@ def get_version(request, uuid, version):
     return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['GET', 'PUT'])
-def get_current_version(request, uuid, version=None):
+@api_view(['GET'])
+def get_current_version(request, uuid):
+    """
+        Return current version of page.
+    """
     if request.method == 'GET':
         page = WikiPage.objects.pages_current_version(uuid=uuid)
         serializer = WikiPageSerializer(page)
         return Response(serializer.data)
-    elif request.method == 'PUT':
+
+    return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['PATCH'])
+def set_current_version(request, uuid, version):
+    """
+        Set page version to current
+    """
+    if request.method == 'PATCH':
         WikiPage.objects.filter(uuid=uuid).update(is_current=False)
         page = WikiPage.objects.pages_version(uuid=uuid, version=version)
         page.is_current = True

@@ -27,14 +27,14 @@ urlpatterns = [
     ),
 
     re_path(
-        r'^api/v1/wiki/page/(?P<uuid>[0-9A-Fa-f-]+)/version/current/$',
+        r'^api/v1/wiki/page/(?P<uuid>[0-9A-Fa-f-]+)/current/version$',
         views.get_current_version,
         name='get_current_version'
     ),
 
     re_path(
-        r'^api/v1/wiki/page/(?P<uuid>[0-9A-Fa-f-]+)/version/current/(?P<version>[0-9]+)$',
-        views.get_current_version,
-        name='get_current_version'
+        r'^api/v1/wiki/page/(?P<uuid>[0-9A-Fa-f-]+)/current/version/(?P<version>[0-9]+)$',
+        views.set_current_version,
+        name='set_current_version'
     ),
 ]
